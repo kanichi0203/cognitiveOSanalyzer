@@ -20,6 +20,13 @@
         .animate-in {
             animation: fadeInSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin 20s linear infinite;
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-200 font-sans selection:bg-sky-500/30 pb-24 min-h-screen">
@@ -88,48 +95,88 @@
 
         // --- データ定義 ---
         const profiles = {
-            INTJ: { name: "建築家", color: "purple", desc: "すべてを計画し、完璧を求める戦略家。常に「より良い方法」を模索し、論理と洞察を武器に目標を達成します。" },
-            INTP: { name: "論理学者", color: "purple", desc: "独自の論理と好奇心で真理を追求する探求者。宇宙の法則から日常の疑問まで、物事の根本的な仕組みを理解しようとします。" },
-            ENTJ: { name: "指揮官", color: "purple", desc: "合理性とカリスマで組織を牽引するリーダー。目標達成のためなら困難を恐れず、効率的なシステムを構築して周囲を動かします。" },
-            ENTP: { name: "討論者", color: "purple", desc: "知的な議論と新しい可能性を愛する挑戦者。既存のルールを疑い、斬新なアイデアと鋭い弁舌で世界に刺激を与えます。" },
-            INFJ: { name: "提唱者", color: "emerald", desc: "深い洞察力で人々の理想を導く導き手。静かですが内に秘めた情熱は熱く、人々の心の本質を見抜き、世界をより良くしようと尽力します。" },
-            INFP: { name: "仲介者", color: "emerald", desc: "内なる価値観と深い共感力を持つ理想主義者。非常に優しく想像力豊かで、他者の痛みに寄り添いながら「自分らしさ」を大切にします。" },
-            ENFJ: { name: "主人公", color: "emerald", desc: "人々の情熱を引き出し、共に歩むリーダー。圧倒的な共感力とカリスマ性で人々を励まし、全体の調和と成長をサポートします。" },
-            ENFP: { name: "広報運動家", color: "emerald", desc: "情熱と想像力で人々を巻き込む自由人。持ち前の明るさと無限のアイデアで、周囲を鼓舞しながら新しい可能性を追求します。" },
-            ISTJ: { name: "管理者", color: "cyan", desc: "事実と責任を重んじる実直な守護者。ルールや伝統を守り、一度引き受けた仕事は最後まで正確に、着実にやり遂げます。" },
-            ISFJ: { name: "擁護者", color: "cyan", desc: "周囲への献身と温かい心を持つ支援者。控えめですが非常に面倒見が良く、大切な人々を守り、穏やかな日常を支え続けます。" },
-            ESTJ: { name: "幹部", color: "cyan", desc: "秩序と効率を重んじ、物事を確実に実行する推進者。現実的で地に足が着いており、ルールに基づきチームを効率的にまとめ上げます。" },
-            ESFJ: { name: "領事", color: "cyan", desc: "調和を大切にし、人々の世話を焼く人気者。常に周囲のニーズに気を配り、みんなが笑顔でいられる温かいコミュニティを築きます。" },
-            ISTP: { name: "巨匠", color: "yellow", desc: "冷静な観察眼と実践的な技術を持つ職人。独立心が強く、状況を冷静に分析して、手元にある道具で瞬時に問題を解決します。" },
-            ISFP: { name: "冒険家", color: "yellow", desc: "柔軟な感性と美意識で今を生きる芸術家。平和を愛し、自分の五感や感情に素直に従いながら、美しいものや楽しい瞬間を味わいます。" },
-            ESTP: { name: "起業家", color: "yellow", desc: "エネルギッシュにリスクを楽しみ、行動する実践者。ルールに縛られず、持ち前の度胸と瞬発力で目の前のチャンスを掴み取ります。" },
-            ESFP: { name: "エンターテイナー", color: "yellow", desc: "持ち前の明るさで今この瞬間を楽しむ天才。周囲をパッと華やかにし、人を楽しませながら自分自身も人生を全力で謳歌します。" }
+            INTJ: { name: "建築家", color: "purple", desc: "すべてを計画し、完璧を求める戦略家。常に「より良い方法」を模索し、論理と洞察を武器に目標を達成します。", growth: "完璧な計画（Ni）だけでなく、時には外の世界の意見や客観的な事実（Te）を柔軟に取り入れることで、より実現可能で強固なビジョンを描けるようになります。" },
+            INTP: { name: "論理学者", color: "purple", desc: "独自の論理と好奇心で真理を追求する探求者。宇宙の法則から日常の疑問まで、物事の根本的な仕組みを理解しようとします。", growth: "頭の中の理論（Ti）を深めるだけでなく、それを他者に分かりやすく共有し、新しい可能性（Ne）を外部と探求することで視野が劇的に広がります。" },
+            ENTJ: { name: "指揮官", color: "purple", desc: "合理性とカリスマで組織を牽引するリーダー。目標達成のためなら困難を恐れず、効率的なシステムを構築して周囲を動かします。", growth: "目標達成の効率（Te）を追求する中で、自分や他者の長期的なビジョンや本当の望み（Ni）に耳を傾けることで、真のリーダーシップが発揮されます。" },
+            ENTP: { name: "討論者", color: "purple", desc: "知的な議論と新しい可能性を愛する挑戦者。既存のルールを疑い、斬新なアイデアと鋭い弁舌で世界に刺激を与えます。", growth: "次々と湧き上がるアイデア（Ne）を、論理的な枠組み（Ti）で精査し、一つのことを最後まで形にする経験を積むことで、説得力と実行力が増します。" },
+            INFJ: { name: "提唱者", color: "emerald", desc: "深い洞察力で人々の理想を導く導き手。静かですが内に秘めた情熱は熱く、人々の心の本質を見抜き、世界をより良くしようと尽力します。", growth: "内なる理想（Ni）を抱え込まず、他者と共感し合いながら（Fe）現実世界に表現していくことで、あなたの洞察はより多くの人を救う力になります。" },
+            INFP: { name: "仲介者", color: "emerald", desc: "内なる価値観と深い共感力を持つ理想主義者。非常に優しく想像力豊かで、他者の痛みに寄り添いながら「自分らしさ」を大切にします。", growth: "自分の深い価値観（Fi）を大切にしながらも、外の世界の多様な可能性（Ne）に触れ、少しずつ現実社会との接点を持つことで、豊かな表現力が開花します。" },
+            ENFJ: { name: "主人公", color: "emerald", desc: "人々の情熱を引き出し、共に歩むリーダー。圧倒的な共感力とカリスマ性で人々を励まし、全体の調和と成長をサポートします。", growth: "他者のために尽くす（Fe）だけでなく、自分自身の内なる理想や直観（Ni）にも意識を向け、自己犠牲を減らすことで、より持続可能で強力な影響力を持てます。" },
+            ENFP: { name: "広報運動家", color: "emerald", desc: "情熱と想像力で人々を巻き込む自由人。持ち前の明るさと無限のアイデアで、周囲を鼓舞しながら新しい可能性を追求します。", growth: "あふれる好奇心（Ne）を、自分にとって本当に大切な価値観（Fi）のフィルターにかけることで、器用貧乏にならず、あなたにしかできない道を切り拓けます。" },
+            ISTJ: { name: "管理者", color: "cyan", desc: "事実と責任を重んじる実直な守護者。ルールや伝統を守り、一度引き受けた仕事は最後まで正確に、着実にやり遂げます。", growth: "過去の経験やルール（Si）を守る堅実さに加え、事実を客観的に体系化して他者と共有する（Te）ことで、より大きな信頼と責任ある立場を築けます。" },
+            ISFJ: { name: "擁護者", color: "cyan", desc: "周囲への献身と温かい心を持つ支援者。控えめですが非常に面倒見が良く、大切な人々を守り、穏やかな日常を支え続けます。", growth: "他者を細やかにサポートする（Si）優しさを持ちながら、全体の調和（Fe）を俯瞰する視点を持つことで、周囲から依存されすぎない健全な関係を築けます。" },
+            ESTJ: { name: "幹部", color: "cyan", desc: "秩序と効率を重んじ、物事を確実に実行する推進者。現実的で地に足が着いており、ルールに基づきチームを効率的にまとめ上げます。", growth: "既存のルールで効率よく物事を進める（Te）だけでなく、過去の成功例や詳細な事実（Si）を丁寧に振り返ることで、より強固で安定した組織を作れます。" },
+            ESFJ: { name: "領事", color: "cyan", desc: "調和を大切にし、人々の世話を焼く人気者。常に周囲のニーズに気を配り、みんなが笑顔でいられる温かいコミュニティを築きます。", growth: "全体の調和（Fe）を優先するあまり自分を見失わないよう、事実や伝統（Si）に基づいた地に足の着いた基準を持つことで、より頼りがいのある存在になります。" },
+            ISTP: { name: "巨匠", color: "yellow", desc: "冷静な観察眼と実践的な技術を持つ職人。独立心が強く、状況を冷静に分析して、手元にある道具で瞬時に問題を解決します。", growth: "状況を冷静に分析する（Ti）だけでなく、実際に体を動かして現実の刺激に触れる（Se）ことで、あなたの問題解決能力はさらに洗練された職人芸となります。" },
+            ISFP: { name: "冒険家", color: "yellow", desc: "柔軟な感性と美意識で今を生きる芸術家。平和を愛し、自分の五感や感情に素直に従いながら、美しいものや楽しい瞬間を味わいます。", growth: "自分の内なる美意識（Fi）を大切にしつつ、五感で感じる現実の体験（Se）を恐れずに取り入れていくことで、より豊かで魅力的な自己表現が可能になります。" },
+            ESTP: { name: "起業家", color: "yellow", desc: "エネルギッシュにリスクを楽しみ、行動する実践者。ルールに縛られず、持ち前の度胸と瞬発力で目の前のチャンスを掴み取ります。", growth: "今この瞬間のスリルや行動（Se）を楽しむと同時に、物事の背後にある論理的な構造（Ti）を理解しようとすることで、より戦略的で無敵の実践者になれます。" },
+            ESFP: { name: "エンターテイナー", color: "yellow", desc: "持ち前の明るさで今この瞬間を楽しむ天才。周囲をパッと華やかにし、人を楽しませながら自分自身も人生を全力で謳歌します。", growth: "目の前の楽しさ（Se）を味わうだけでなく、自分の本当の気持ちや大切な人への深い思いやり（Fi）に立ち返ることで、単なる人気者を超えた深い魅力が生まれます。" }
         };
 
         const functionDetails = {
             Se: { name: "外向的感覚", icon: "eye", color: "text-yellow-400", bg: "bg-yellow-400/20", border: "border-yellow-400/50",
-                    desc: "五感で「今ここ」の現実をありのままに捉え、瞬時に適応する機能。瞬発力があり、体を動かしたり、実際に体験したりすることを好みます。新しい環境への適応力が非常に高いです。", 
+                    desc_1: "五感を通じて「今ここ」の現実をありのままに捉え、瞬時に適応します。息をするように現在を楽しみ、高い瞬発力と行動力で周囲を巻き込みます。",
+                    desc_2: "内界で定めた目標や価値観を現実世界で実現するために、周囲の状況や事実を素早く察知し、実践的な行動を通じてサポートします。",
+                    desc_3: "普段は別の機能を使っていますが、リラックスする際や行き詰まった時に、スポーツや趣味などの現実的な体験や物理的な刺激を楽しむことで気分転換を図ります。",
+                    desc_4: "普段は「今この瞬間」の現実や五感の刺激を軽視しがちですが、過度なストレス下では衝動的な行動や刹那的な快楽（過食や浪費など）に走る形で暴走することがあります。",
+                    growth_3: "考えすぎて行き詰まったら、体を動かしたり、美味しいものを食べたり、物理的な刺激（スポーツや自然など）に触れる時間を作ってください。頭ではなく「体」を使うことで、新しい視点が生まれます。",
+                    growth_4: "「今この瞬間を楽しむこと」や「現実の刺激」を無意識に軽視したり恐れたりしていませんか？完璧な計画や深い思考も大切ですが、時には五感で感じるリアルな体験に身を委ねる練習が、あなたの心を驚くほど軽くします。",
                     bad: "衝動的で無計画な行動や、刹那的な快楽（暴飲暴食や浪費、過度な遊びなど）に走り、後先考えずにリスクを取ってしまう。" },
             Si: { name: "内向的感覚", icon: "database", color: "text-emerald-400", bg: "bg-emerald-400/20", border: "border-emerald-400/50",
-                    desc: "過去の経験や記憶、自分の中に蓄積されたデータと現在の状況を照らし合わせる機能。ルーティンや伝統を重んじ、慎重で正確。一度覚えた手順を忠実に再現するのが得意です。", 
+                    desc_1: "過去の経験や蓄積されたデータを元に、現在を安全かつ確実に行き渡らせます。ルーティンや秩序を非常に重んじ、安定した基盤を築くプロフェッショナルです。",
+                    desc_2: "外界へ向かうエネルギーを、過去の経験や細部への注意力で堅実にサポートします。計画の実現に向けて、現実的で着実な手順を提供します。",
+                    desc_3: "リラックスしたい時や心が不安定な時に、慣れ親しんだ習慣や懐かしい思い出、お気に入りのルーティンに立ち返ることで安心感を得ます。",
+                    desc_4: "普段は詳細な事実や過去の慣習を退屈に感じますが、極度のストレス下では過去の些細な失敗や特定の記憶に過剰に囚われ、身動きが取れなくなることがあります。",
+                    growth_3: "新しいことばかり追いかけて疲れた時は、あえて「お気に入りのルーティン」をこなしたり、懐かしい思い出に浸ったり、身の回りを整理整頓してみてください。過去の蓄積があなたに確かな安心感を与えてくれます。",
+                    growth_4: "細かい事実の確認や、繰り返しの作業を「退屈だ」「意味がない」と切り捨てないでください。あなたの壮大なアイデアや理想を現実にするためには、この「地味で確実な足場作り」を受け入れることが最大の鍵となります。",
                     bad: "過去の失敗や些細な記憶、人に言われた言葉に過剰に囚われ、ネガティブな反芻を繰り返して新しい変化を極度に恐れる。" },
             Ne: { name: "外向的直観", icon: "lightbulb", color: "text-orange-400", bg: "bg-orange-400/20", border: "border-orange-400/50",
-                    desc: "外界からヒントを得て、「もしこうだったら？」「こんな可能性もある」とアイデアを無限に広げる機能。好奇心旺盛で、物事の裏側にある関連性を見つけ出すブレインストーミングが得意です。", 
+                    desc_1: "「もしこうだったら？」と無限の可能性やアイデアを外界から次々と連想します。常に新しい刺激や未知のパターンを追い求め、革新的な閃きを生み出します。",
+                    desc_2: "自身の内なる論理や価値観を深めるために、外の世界から多様な視点や新しい選択肢を取り入れ、柔軟で独創的なアプローチを可能にします。",
+                    desc_3: "真面目で堅実な日常の合間に、ふとした瞬間に突飛なアイデアを出したり、普段なら選ばないような新しい可能性を遊び心として楽しんだりします。",
+                    desc_4: "普段は予測不可能な変化や未確定な可能性を避けますが、極限状態では「あらゆる悪い可能性」が頭をよぎり、取り越し苦労や破滅的な妄想に苛まれます。",
+                    growth_3: "ルーティンや堅実な日々に少し息苦しさを感じたら、あえて「普段なら絶対にやらないこと」を試したり、全く違う分野のアイデアに触れたりして、日常に遊び心と「もしも」の可能性を取り入れてみてください。",
+                    growth_4: "予測不可能な変化や、明確な答えのない可能性を極度に恐れていませんか？「すべてをコントロールすること」を手放し、時には未知の展開や偶然のひらめきに対して心を開くことで、新しい世界が広がります。",
                     bad: "「もしあの発言で嫌われたら」「全部失敗したらどうしよう」と、まだ起きていない最悪のシナリオを次々と連想し、過剰な不安と妄想に陥る。" },
             Ni: { name: "内向的直観", icon: "target", color: "text-purple-400", bg: "bg-purple-400/20", border: "border-purple-400/50",
-                    desc: "無意識の内に複数の情報から本質を抽出し、「最終的にこうなる」という一つのビジョンや未来を予測する機能。長期的な視点を持ち、突然の「ひらめき」によって本質を見抜く力に優れます。", 
+                    desc_1: "散在する情報から無意識の内に本質を抽出し、「最終的にこうなる」という一つの確固たるビジョンを描き出します。長期的な視点と深い洞察力が武器です。",
+                    desc_2: "外界で行動を起こす際や人と接する際に、物事の背後にある意味や将来の展開を予測し、より深いレベルでの方向性や戦略を提供します。",
+                    desc_3: "行き詰まった時や一人の時間に、ふと物事の裏に隠された意味を悟ったり、直感的なひらめきによって状況の打開策を見出したりします。",
+                    desc_4: "普段は「今この瞬間」の現実を重視しますが、ストレス下では突然、未来に対する根拠のない絶望感や「裏切られるのではないか」というパラノイアに囚われます。",
+                    growth_3: "目の前の現実や行動に追われて疲弊した時は、一人静かな環境で「本当はどうなりたいのか」「この出来事の本当の意味は何か」と、物事の深い部分にじっくりと想いを馳せる時間を持つと、進むべき道が見えてきます。",
+                    growth_4: "「今ここ」の現実を楽しむあまり、長期的な影響や物事の裏側にある本質を見落としがちです。少し立ち止まって「この行動は将来どういう結果をもたらすか」という視点を持つことで、あなたの人生はより深みと安定を増します。",
                     bad: "証拠もないのに「みんな裏で悪口を言っている」「絶対に悪いことが起きる」と、パラノイア（妄想的な悲観）に陥り、世界に絶望する。" },
             Te: { name: "外向的思考", icon: "settings", color: "text-blue-400", bg: "bg-blue-400/20", border: "border-blue-400/50",
-                    desc: "客観的な事実やデータ、社会的なルールに基づき、効率的・合理的に物事を判断する機能。目標達成のために仕組みを作ったり、物事を体系化して周囲を動かすリーダーシップに優れます。", 
+                    desc_1: "客観的な事実やルールに基づき、効率的かつ合理的に世界を構築します。目標達成のためにシステムを整理し、周囲を強力に牽引する天性のリーダーです。",
+                    desc_2: "内なる直観や感覚で得た情報を現実社会で形にするために、論理的な計画を立て、効率的で無駄のない実行プロセスをサポートします。",
+                    desc_3: "普段は感情や感覚を優先しますが、必要に迫られた際やリラックスした状態では、ふと部屋を整理整頓したり、タスクを論理的にこなすことに楽しみを見出します。",
+                    desc_4: "普段は効率や冷徹な論理を嫌いますが、感情や価値観が脅かされる極度のストレス下では、突然他者を論理で厳しく批判し、支配的・威圧的になります。",
+                    growth_3: "自分の感情や理想だけで物事が進まなくなった時、あえてドライに「どうすれば効率よく実現できるか」「客観的な事実はどうか」とタスクを論理的に整理してみてください。あなたの理想に強い実行力が伴います。",
+                    growth_4: "感情や個人の価値観を大切にするあまり、効率性や客観的なルールを「冷たい」と拒絶していませんか？論理的な思考はあなたの敵ではなく、あなたの優しい理想を現実世界で守り抜くための最強の「盾と剣」になります。",
                     bad: "他者の感情や思いやりを完全に無視し、「ルールだから」「効率が悪い」と冷徹に割り切り、理屈で相手を厳しく責め立てたり支配的になったりする。" },
             Ti: { name: "内向的思考", icon: "cpu", color: "text-cyan-400", bg: "bg-cyan-400/20", border: "border-cyan-400/50",
-                    desc: "自分の中の論理的な整合性や、「なぜそうなるのか？」という本質的な原理原則を深く追求する機能。物事の構造を分析し、矛盾のない独自の論理体系を築き上げることを好みます。", 
+                    desc_1: "自分の中の論理的な整合性や本質的な原理原則を徹底的に追求します。物事の構造を緻密に分析し、矛盾のない独自の洗練された論理体系を築き上げます。",
+                    desc_2: "外界のアイデアや現実の情報を取り入れる際、それが「論理的に正しいか」「筋が通っているか」を冷静に分析し、的確な判断を下すためのフィルターとなります。",
+                    desc_3: "普段は他者の感情や外界の調和を優先しますが、一人になった時や趣味の領域において、パズルを解くように物事のメカニズムを分析することに没頭します。",
+                    desc_4: "普段は全体の調和や他者の感情を第一に考えますが、ストレスが限界を超えると、他者を辛辣に論破しようとしたり、自分の頭の中だけの極端な理屈に固執したりします。",
+                    growth_3: "他者の感情や外界の調和に気を配りすぎて疲れた時は、一人になって「自分にとって論理的に納得できるか」という客観的な真理やメカニズムを分析する時間を持ってください。パズルを解くような思考が頭をスッキリさせます。",
+                    growth_4: "集団の調和や他者の気持ちを優先しすぎるあまり、「本当にそれは筋が通っているか？」という冷静な分析から目を背けがちです。時には感情を切り離し、客観的で批判的な思考を取り入れることで、健全な境界線を引くことができます。",
                     bad: "他者の意見や感情的な訴えを一切聞き入れず、自分の頭の中だけの極端な理屈や批判的思考に固執し、周囲を見下してしまう。" },
             Fe: { name: "外向的感情", icon: "users", color: "text-pink-400", bg: "bg-pink-400/20", border: "border-pink-400/50",
-                    desc: "他者の感情や、その場の空気、集団全体の調和を最も重要な判断基準にする機能。共感力が高く、誰もが納得し、平和で友好的な環境を作るために尽力します。", 
+                    desc_1: "他者の感情やその場の空気、集団全体の調和を最も重要な判断基準とします。誰もが納得し、平和で友好的な環境を作ることに全力を注ぐ思いやりの人です。",
+                    desc_2: "内界の洞察や論理を外に表現する際、他者がどう受け取るかを配慮し、円滑なコミュニケーションと温かい人間関係を築くためのサポート役として機能します。",
+                    desc_3: "普段は客観的な論理を優先しますが、気の置けない仲間との時間では、ふと他者の世話を焼いたり、場を和ませるための冗談を言ったりして和気あいあいと楽しみます。",
+                    desc_4: "普段は感情的な判断を非合理として避けますが、極度のストレス下では「誰からも理解されていない」と感情的になり、周囲に対して承認欲求や不満を爆発させることがあります。",
+                    growth_3: "自分の中の論理や効率ばかりを追求して視野が狭くなった時、あえて他者の感情に寄り添い、周囲と協力して調和を生み出す経験を積んでみてください。人の温かさに触れることで、あなたの思考はより豊かなものになります。",
+                    growth_4: "論理的整合性や客観的事実を重視するあまり、他者の感情や「その場の空気」を非合理だと切り捨てていませんか？人の気持ちや全体の調和を考慮に入れることこそが、あなたの優れた論理を社会で活かすための最大の潤滑油になります。",
                     bad: "他人の目や評価を過剰に気にしすぎたり、自分を犠牲にしすぎた結果、溜め込んだ不満を周囲に感情的に八つ当たりしてしまう。" },
             Fi: { name: "内向的感情", icon: "heart", color: "text-rose-400", bg: "bg-rose-400/20", border: "border-rose-400/50",
-                    desc: "自分の心の中にある確固たる価値観、倫理観、「自分がどう感じるか」を基準にする機能。自分らしさを非常に大切にし、他者の個性や感情の機微に対しても深く寄り添うことができます。", 
+                    desc_1: "自分の心の中にある確固たる価値観や倫理観、「自分がどう感じるか」を最優先します。自分らしさを何よりも大切にし、他者の個性の違いや感情にも深く寄り添います。",
+                    desc_2: "外界の可能性や現実の行動を選択する際、「それは本当に自分にとって価値があるか」「道徳的に正しいか」を判断する羅針盤として働き、行動に真正性をもたらします。",
+                    desc_3: "普段は客観的な事実や効率を重視しますが、ふとした瞬間に芸術に触れて深く感動したり、自分だけのこだわりや個人的な価値観を大切にする時間を取り入れます。",
+                    desc_4: "普段は効率や客観的な結果を重視し個人の感情を後回しにしますが、極限のストレス下では「自分は被害者だ」と思い込み、ひどく感傷的になったり周囲を感情的に拒絶したりします。",
+                    growth_3: "客観的な事実や効率、計画に縛られて自分を見失いそうな時、あえて「自分はどう感じているのか」「何が好きなのか」という主観的な心の声に耳を傾け、芸術や個人の趣味に没頭することで、心のバランスを取り戻せます。",
+                    growth_4: "効率や結果、客観的な正しさを追求するあまり、「自分自身の大切な感情」や「個人の価値観」を抑え込んでいませんか？自分の弱さや本当の願いを認め、心と向き合う勇気を持つことが、真のリーダーシップと人間的魅力に繋がります。",
                     bad: "「誰も自分を分かってくれない」と被害妄想に陥り、自らの殻に閉じこもって、周囲に対して極度に感情的かつ排他的になる。" }
         };
 
@@ -158,8 +205,6 @@
         };
 
         // --- レンダリング関数 ---
-        
-        // ヘッダーボタンの描画
         function renderHeader() {
             const grid = document.getElementById('type-selector-grid');
             let html = '';
@@ -180,10 +225,11 @@
             grid.innerHTML = html;
         }
 
-        // 機能スタックブロックのHTML生成
-        function getStackBlockHTML(func, level, role, width, opacity = "opacity-100", isPrimary = false) {
+        function getStackBlockHTML(func, level, role, width, opacity = "opacity-100", isPrimary = false, pos = 1) {
             const data = functionDetails[func];
             const primaryShadow = isPrimary ? 'shadow-[0_0_20px_rgba(255,255,255,0.05)]' : '';
+            const descText = data[`desc_${pos}`];
+            
             return `
                 <div class="${width} ${opacity} transition-all duration-300 hover:opacity-100 group">
                     <div class="flex flex-col md:flex-row items-start md:items-stretch gap-6 p-6 rounded-[1.5rem] border ${data.bg} ${data.border} backdrop-blur-sm shadow-lg">
@@ -200,7 +246,7 @@
                                 <span class="text-slate-500 mr-2">役割:</span>${role}
                             </p>
                             <p class="text-base text-slate-300 leading-relaxed font-medium">
-                                ${data.desc}
+                                ${descText}
                             </p>
                         </div>
                     </div>
@@ -208,20 +254,6 @@
             `;
         }
 
-        // ミニバッジのHTML生成
-        function getFuncBadgeHTML(func, highlight = false) {
-            const data = functionDetails[func];
-            const stateClass = highlight ? `${data.bg} ${data.border} ring-2 ring-white/20` : `bg-slate-900 border-slate-800 opacity-60 grayscale`;
-            const colorClass = highlight ? data.color : 'text-slate-500';
-            
-            return `
-                <div class="flex flex-col items-center justify-center rounded-2xl border w-20 h-20 text-xl shadow-lg transition-all ${stateClass}">
-                    <span class="font-black font-mono ${colorClass}">${func}</span>
-                </div>
-            `;
-        }
-
-        // ダッシュボード全体の描画
         function renderDashboard() {
             const container = document.getElementById('dashboard-container');
             if (!selectedType) {
@@ -237,17 +269,30 @@
 
             const J_or_P = selectedType[3];
             const E_or_I = selectedType[0];
-            const outerFaceFunc = E_or_I === 'E' ? f1 : f2;
             
-            // J/P Explanation logic
-            const jpExplanationText = J_or_P === 'J' 
-                ? `あなたは「J（判断的態度）」を持っています。そのため、外界との接点においては【判断機能（TまたはF）】を使用し、物事を整理して計画を立て、早く決着をつけてスッキリしたいと考えます。`
-                : `あなたは「P（知覚的態度）」を持っています。そのため、外界との接点においては【知覚機能（SまたはN）】を使用し、情報を常に受け入れておきたいため、ギリギリまで結論を保留し柔軟に対応したいと考えます。`;
+            // Outer Face Function
+            const outerFaceFunc = E_or_I === 'E' ? f1 : f2;
+            const outerFuncObj = functionDetails[outerFaceFunc];
+            
+            // Labels for JP and EI
+            const jpTypeLabel = J_or_P === 'J' ? 'J 判断型' : 'P 知覚型';
+            const eiTypeLabel = E_or_I === 'E' ? 'E 外向型' : 'I 内向型';
 
-            // E/I Explanation logic
-            const eiExplanationText = E_or_I === 'E' 
-                ? `したがって、外に向けている顔（${f1}）がそのまま「主機能」となります。思っていることと行動が直結しやすいタイプです。`
-                : `したがって、外に向けている顔（${f2}）はあくまで「補助機能」にすぎず、一番大切な「主機能」は心の奥底に隠された（${f1}）となります。`;
+            // Inner/Outer setup for Diagram
+            const innerFunc = E_or_I === 'I' ? f1 : f2;
+            const innerFuncObj = functionDetails[innerFunc];
+            const innerIsPrimary = E_or_I === 'I';
+            const outerIsPrimary = E_or_I === 'E';
+            
+            // 図解の線のスタイル（主機能は実線、補助機能は破線）
+            const outerBorderStyle = outerIsPrimary ? 'border-solid' : 'border-dashed';
+            const innerBorderStyle = innerIsPrimary ? 'border-solid' : 'border-dashed';
+            
+            const paragraph1 = `先頭の文字が「${E_or_I}（${E_or_I === 'E' ? '外向' : '内向'}型）」であるため、あなたの一番得意な「主機能」のエネルギーは${E_or_I === 'E' ? '外' : '内'}に向かいます。末尾が「${J_or_P}」であるため、${J_or_P === 'J' ? '物事を整理して計画を立て、早く決着をつけてスッキリしたいと考えます。あなたは【判断機能】が外界との接点となります。' : '情報を常に受け入れておきたいため、ギリギリまで結論を保留し柔軟に対応したいと考えます。あなたは【知覚機能】が外界との接点となります。'}`;
+
+            const paragraph2 = E_or_I === 'E' 
+                ? `主機能として「${outerFaceFunc}（${outerFuncObj.name}）」が他者との関わりに発揮されます。心の中では「${innerFunc}（${innerFuncObj.name}）」が働きます。`
+                : `外界との関わりにおいては「${outerFaceFunc}（${outerFuncObj.name}）」が外に見せる顔となります。心の中では主機能である「${innerFunc}（${innerFuncObj.name}）」が深く働いています。`;
 
             // Loop explanation logic
             const loopExplanationText = E_or_I === 'I'
@@ -285,15 +330,15 @@
                         </p>
                         
                         <div class="flex flex-col items-center gap-4">
-                            ${getStackBlockHTML(f1, "1st / 主機能", "メインエンジン。あなたの性格の核であり、最も自然に、無意識レベルで使いこなす機能です。", "w-full", "opacity-100", true)}
-                            ${getStackBlockHTML(f2, "2nd / 補助機能", "サポート役。主機能を補い、外界と内界のバランスを取るための羅針盤として働きます。", "w-[95%] md:w-[90%]")}
-                            ${getStackBlockHTML(f3, "3rd / 代替機能", "リラックス・成長。年齢を重ねたり、上位の機能が疲れた時に使われ、普段とは違う視点を与えてくれます。", "w-[90%] md:w-[80%]", "opacity-90")}
-                            ${getStackBlockHTML(f4, "4th / 劣等機能", "アキレス腱。最も苦手とし、強いストレスを感じる領域ですが、ここを受け入れることが最大の成長に繋がります。", "w-[85%] md:w-[70%]", "opacity-70")}
+                            ${getStackBlockHTML(f1, "1st / 主機能", "メインエンジン。あなたの性格の核であり、最も自然に、無意識レベルで使いこなす機能です。", "w-full", "opacity-100", true, 1)}
+                            ${getStackBlockHTML(f2, "2nd / 補助機能", "サポート役。主機能を補い、外界と内界のバランスを取るための羅針盤として働きます。", "w-[95%] md:w-[90%]", "opacity-100", false, 2)}
+                            ${getStackBlockHTML(f3, "3rd / 代替機能", "リラックス・成長。年齢を重ねたり、上位の機能が疲れた時に使われ、普段とは違う視点を与えてくれます。", "w-[90%] md:w-[80%]", "opacity-90", false, 3)}
+                            ${getStackBlockHTML(f4, "4th / 劣等機能", "アキレス腱。最も苦手とし、強いストレスを感じる領域ですが、ここを受け入れることが最大の成長に繋がります。", "w-[85%] md:w-[70%]", "opacity-70", false, 4)}
                         </div>
                     </section>
 
                     <!-- Section 3 & 4 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-8">
                         
                         <!-- Section 3: Outer Face & Logic Switch -->
                         <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 relative overflow-hidden">
@@ -305,52 +350,48 @@
                                 特に<strong>「J/P」</strong>と<strong>「E/I」</strong>が、あなたの情報処理のベクトルを決定しています。
                             </p>
                             
-                            <div class="space-y-8">
-                                <!-- J/P Switch Explanation -->
-                                <div class="bg-slate-950/50 rounded-2xl p-6 border border-slate-800/50">
-                                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                                        <span class="bg-slate-800 text-sky-400 px-2 py-0.5 rounded text-sm font-mono">${J_or_P}</span> 
-                                        外界への態度（判断か知覚か）
-                                    </h3>
-                                    <p class="text-sm text-slate-300 leading-relaxed">
-                                        あなたのタイプは末尾が「<strong>${J_or_P}</strong>」です。これは外の世界に対してどの機能を使うかを示すスイッチです。
-                                        ${jpExplanationText}
-                                        <br/>
-                                        <span class="mt-2 inline-block px-3 py-1 bg-slate-900 border border-slate-700 rounded-lg text-slate-300">
-                                            結果 ➔ 外界に見せる機能は <strong>${outerFaceFunc}</strong> に確定。
-                                        </span>
-                                    </p>
+                            <div class="bg-slate-950/50 rounded-2xl p-6 md:p-10 border border-slate-800/50">
+                                
+                                <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 md:p-8 mb-8 text-center shadow-inner">
+                                    <div class="text-slate-400 text-sm font-bold mb-3">あなたは</div>
+                                    <div class="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-8 mb-6">
+                                        <div class="text-3xl md:text-4xl font-black text-white tracking-widest">「${eiTypeLabel}」</div>
+                                        <div class="text-3xl md:text-4xl font-black text-white tracking-widest">「${jpTypeLabel}」</div>
+                                    </div>
+                                    <div class="text-slate-400 text-sm font-bold mb-3">外界に見せる機能は</div>
+                                    <div class="text-2xl md:text-3xl font-black ${outerFuncObj.color} tracking-widest flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
+                                        <span class="font-mono text-5xl">${outerFaceFunc}</span>
+                                        <span class="text-xl md:text-2xl">（${outerFuncObj.name}）</span>
+                                    </div>
                                 </div>
 
-                                <!-- E/I Switch Explanation -->
-                                <div class="bg-slate-950/50 rounded-2xl p-6 border border-slate-800/50">
-                                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                                        <span class="bg-slate-800 text-sky-400 px-2 py-0.5 rounded text-sm font-mono">${E_or_I}</span> 
-                                        エネルギーの向き（主機能の決定）
-                                    </h3>
-                                    <p class="text-sm text-slate-300 leading-relaxed mb-6">
-                                        先頭の文字が「<strong>${E_or_I}（${E_or_I === 'E' ? '外向' : '内向'}型）</strong>」であるため、あなたの一番得意な「主機能」のエネルギーは${E_or_I === 'E' ? '外' : '内'}に向かいます。
-                                        ${eiExplanationText}
-                                    </p>
+                                <div class="space-y-4 text-base md:text-lg text-slate-300 leading-relaxed mb-12 max-w-4xl mx-auto">
+                                    <p>${paragraph1}</p>
+                                    <p>${paragraph2}</p>
+                                </div>
 
-                                    <!-- Logic Diagram -->
-                                    <div class="flex flex-col items-center justify-center p-4 bg-slate-900 rounded-xl border border-slate-800">
-                                        <div class="flex w-full items-center justify-between gap-2 max-w-sm">
-                                            <div class="text-center w-1/3">
-                                                <span class="text-xs text-slate-500 block mb-2">Inner (内面)</span>
-                                                ${getFuncBadgeHTML(E_or_I === 'I' ? f1 : f2, E_or_I === 'I')}
-                                                ${E_or_I === 'I' ? '<span class="text-[10px] text-rose-400 font-bold mt-2 block">主機能 (1st)</span>' : ''}
-                                            </div>
-                                            <div class="flex flex-col items-center flex-1">
-                                                <i data-lucide="arrow-right" class="text-slate-600 mb-1 w-6 h-6"></i>
-                                                <span class="text-[10px] text-slate-400 font-mono tracking-widest">${E_or_I === 'I' ? '外へ出す顔' : 'そのまま外へ'}</span>
-                                            </div>
-                                            <div class="text-center w-1/3">
-                                                <span class="text-xs text-slate-500 block mb-2">Outer (外界)</span>
-                                                ${getFuncBadgeHTML(E_or_I === 'E' ? f1 : f2, E_or_I === 'E')}
-                                                ${E_or_I === 'E' ? '<span class="text-[10px] text-sky-400 font-bold mt-2 block">主機能 (1st)</span>' : ''}
+                                <!-- Diagram: Inner Core vs Outer Face -->
+                                <div class="flex justify-center items-center py-8">
+                                    <div class="relative w-64 h-64 rounded-full border-[3px] ${outerBorderStyle} ${outerFuncObj.border} flex items-start justify-center shadow-[0_0_40px_rgba(0,0,0,0.4)] mt-6">
+                                        
+                                        <!-- Outer Face Label -->
+                                        <div class="absolute -top-8 bg-slate-900 px-5 py-2 rounded-full border-2 border-solid ${outerFuncObj.border} flex flex-col items-center z-20 shadow-lg">
+                                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">Outer (外界への顔)</span>
+                                            <div class="flex items-center gap-3">
+                                                <span class="text-3xl font-black font-mono ${outerFuncObj.color}">${outerFaceFunc}</span>
+                                                ${outerIsPrimary ? '<span class="text-xs bg-rose-500 text-white px-2 py-0.5 rounded-full font-bold">1st 主機能</span>' : '<span class="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full font-bold">2nd 補助</span>'}
                                             </div>
                                         </div>
+                                        
+                                        <!-- Inner Core -->
+                                        <div class="absolute inset-0 m-auto w-36 h-36 rounded-full border-[6px] ${innerBorderStyle} ${innerFuncObj.border} ${innerFuncObj.bg} flex flex-col items-center justify-center shadow-[0_0_30px_rgba(0,0,0,0.8)] backdrop-blur-md z-10">
+                                            <span class="text-xs text-slate-300 font-bold uppercase tracking-widest mb-1">Inner (心の中)</span>
+                                            <span class="text-5xl font-black font-mono ${innerFuncObj.color}">${innerFunc}</span>
+                                            ${innerIsPrimary ? '<span class="text-xs bg-rose-500 text-white px-3 py-1 rounded-full font-bold mt-2 shadow-lg">1st 主機能</span>' : '<span class="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full font-bold mt-2">2nd 補助</span>'}
+                                        </div>
+
+                                        <!-- Orbiting dots decoration -->
+                                        <div class="absolute inset-0 rounded-full border-[2px] ${outerBorderStyle} ${outerFuncObj.border} opacity-40 animate-spin-slow"></div>
                                     </div>
                                 </div>
                             </div>
@@ -397,13 +438,57 @@
                                 </div>
                             </div>
                         </section>
+
+                        <!-- Section 5: Growth & Development -->
+                        <section class="bg-emerald-950/10 border border-emerald-900/40 rounded-3xl p-8 relative overflow-hidden">
+                            <div class="absolute -bottom-10 -right-10 opacity-5">
+                                <i data-lucide="trending-up" class="w-64 h-64 text-emerald-500"></i>
+                            </div>
+                            <h2 class="text-emerald-400 font-bold tracking-widest uppercase text-sm mb-6 flex items-center gap-2 relative z-10">
+                                <i data-lucide="compass" class="w-5 h-5"></i> Section 5: Growth & Development
+                            </h2>
+                            <p class="text-slate-300 text-base mb-8 relative z-10 leading-relaxed">
+                                あなたの性質を深く理解し、脳力を最大限に伸ばしていくための道標です。<br/>
+                                強みを生かしつつ、見落としがちな機能とどう向き合うかが自己成長の鍵となります。
+                            </p>
+
+                            <div class="space-y-6 relative z-10">
+                                <!-- 全体的アドバイス -->
+                                <div class="bg-emerald-950/30 border border-emerald-800/40 rounded-2xl p-6">
+                                    <h4 class="text-lg font-bold text-emerald-200 tracking-wider mb-3">あなたへの成長アドバイス</h4>
+                                    <p class="text-sm text-slate-300 leading-relaxed">
+                                        ${profile.growth}
+                                    </p>
+                                </div>
+
+                                <!-- 代替機能（3rd）の育て方 -->
+                                <div class="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-6">
+                                    <h4 class="text-lg font-bold text-sky-300 tracking-wider mb-3 flex items-center gap-2">
+                                        代替機能 <span class="font-mono text-sky-400">[3rd: ${f3}]</span> の育て方
+                                    </h4>
+                                    <p class="text-sm text-slate-300 leading-relaxed">
+                                        ${functionDetails[f3].growth_3}
+                                    </p>
+                                </div>
+
+                                <!-- 劣等機能（4th）との付き合い方 -->
+                                <div class="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-6">
+                                    <h4 class="text-lg font-bold text-rose-300 tracking-wider mb-3 flex items-center gap-2">
+                                        劣等機能 <span class="font-mono text-rose-400">[4th: ${f4}]</span> との付き合い方
+                                    </h4>
+                                    <p class="text-sm text-slate-300 leading-relaxed">
+                                        ${functionDetails[f4].growth_4}
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
                     </div>
                 </div>
             `;
             
             container.classList.remove('hidden');
             
-            // LucideアイコンをSVGとして描画（動的に追加されたHTMLに対して）
+            // LucideアイコンをSVGとして描画
             lucide.createIcons();
         }
 
